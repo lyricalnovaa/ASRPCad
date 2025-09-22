@@ -1,11 +1,11 @@
+import { socket } from './socket.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = '/';
+        window.location.href = '/login.html';
         return;
     }
-
-    const socket = io();
 
     async function fetchData() {
         try {
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error fetching data:', error);
             if (error.status === 401) {
-                window.location.href = '/';
+                window.location.href = '/login.html';
             }
         }
     }
@@ -50,11 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    socket.on('live_calls_update', updateCalls);
-    socket.on('live_units_update', updateUnits);
+    window.addEventListener('callsUpdate', (e) => updateCalls(e.detail));
+    window.addEventListener('unitsUpdate', (e) => updateUnits(e.detail));
 
     window.updateStatus = (status) => {
-        const callsign = '101'; 
+        const callsign = '101'; // Needs to be dynamic
         socket.emit('update_status', { callsign, status });
         fetch('/api/cad/units/status', {
             method: 'POST',
