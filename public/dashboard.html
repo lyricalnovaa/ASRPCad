@@ -1,1 +1,32 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDT/CAD Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container dashboard-layout">
+        <div class="column">
+            <h3 style="color: var(--blue-highlight);">Active Calls 🚨</h3>
+            <div id="calls-container"></div>
+        </div>
+        <div class="column">
+            <h3 style="color: var(--blue-highlight);">Active Units 🚓🚑🚒</h3>
+            <div id="units-container"></div>
+            <hr style="border-color: var(--border-color); margin: 20px 0;">
+            <div id="unit-actions">
+                <h4 style="color: var(--blue-highlight);">My Status</h4>
+                <div class="unit-status-buttons">
+                    <button class="btn btn-primary" onclick="updateStatus('10-8')">10-8 (In-Service)</button>
+                    <button class="btn btn-primary" onclick="updateStatus('10-6')">10-6 (Busy)</button>
+                    <button class="btn btn-primary" onclick="updateStatus('10-7')">10-7 (Off-Duty)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
