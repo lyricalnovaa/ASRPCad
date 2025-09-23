@@ -4,6 +4,7 @@ const axios = require('axios');
 const authRouter = express.Router();
 const { rolePermissionMapping } = require('../models/key');
 const { getUserByDiscordId, createUser, updateUser } = require('../models/user');
+const { authenticateJWT } = require('../middleware/auth');
 
 const CLIENT_ID = 'YOUR_DISCORD_CLIENT_ID';
 const CLIENT_SECRET = 'YOUR_DISCORD_CLIENT_SECRET';
