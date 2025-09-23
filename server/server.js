@@ -16,6 +16,11 @@ app.use(cors());
 
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Add this route to serve the login page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/login.html'));
+});
+
 const authRoutes = require('./routes/auth');
 const cadRoutes = require('./routes/cad');
 const adminRoutes = require('./routes/admin');
@@ -30,26 +35,42 @@ io.on('connection', (socket) => {
 });
 
 // ERLC API Polling
-const ERLC_API_URL = 'YOUR_ERLC_API_URL_FOR_GETTING_UNITS';
+const ERLC_API_URL = 'https://api.policeroleplay.community/v1/server/players';
 const ERLC_SERVER_KEY = process.env.ERLC_SERVER_KEY;
 
 async function fetchErlcData() {
     try {
-        const headers = { 'Server-Key': ERLC_SERVER_KEY };
+        const headers = { 'server-key': ERLC_SERVER_KEY, 'Accept': '*/*' };
         const response = await axios.get(ERLC_API_URL, { headers });
-        const erlcUnits = response.data;
+        const allPlayers = response.data;
+
+        const activeUnits = allPlayers
+            .filter(player => player.Team === 'Police' || player.Team === 'Sheriff')
+            .map(unit => {
+                const playerName = unit.Player.split(':')[0];
+                return {
+                    callsign: unit.Callsign,
+                    playerName: playerName,
+                    team: unit.Team,
+                    status: 'Active'
+                };
+            });
+
+        // Use a batch to delete all documents in the 'units' collection
+        const existingUnitsSnapshot = await db.collection('units').get();
+        const deleteBatch = db.batch();
+        existingUnitsSnapshot.docs.forEach(doc => deleteBatch.delete(doc.ref));
+        await deleteBatch.commit();
         
-        const unitsBatch = db.batch();
-        const unitsSnapshot = await db.collection('units').get();
-        unitsSnapshot.docs.forEach(doc => {
-            const unit = erlcUnits.find(u => u.callsign === doc.data().callsign);
-            if (unit) {
-                unitsBatch.update(doc.ref, unit);
-            }
+        // Add new active units to the 'units' collection
+        const addBatch = db.batch();
+        activeUnits.forEach(unit => {
+            const docRef = db.collection('units').doc(unit.callsign);
+            addBatch.set(docRef, unit);
         });
-        await unitsBatch.commit();
-        
-        io.emit('live_units_update', erlcUnits);
+        await addBatch.commit();
+
+        io.emit('live_units_update', activeUnits);
     } catch (error) {
         console.error('Error fetching ERLC data:', error.message);
     }
