@@ -1,5 +1,7 @@
 document.getElementById('register-form').addEventListener('submit', async (e) => {
+    // Prevent the default form submission
     e.preventDefault();
+
     const username = e.target.username.value;
     const password = e.target.password.value;
 
@@ -13,6 +15,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
 
         if (response.ok) {
             alert(data.message);
+            // Redirect to the login page after successful registration
             window.location.href = '/login.html';
         } else {
             alert(data.message);
