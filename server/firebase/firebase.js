@@ -2,12 +2,15 @@ const admin = require('firebase-admin');
 require('dotenv').config();
 
 try {
-  const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+  
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount),
+    databaseId: 'Database'
   });
+
 } catch (error) {
-  console.error("Failed to parse GOOGLE_APPLICATION_CREDENTIALS. Ensure it is a valid stringified JSON object.", error);
+  console.error("Failed to initialize Firebase Admin SDK. Check your environment variables.", error);
   process.exit(1);
 }
 
