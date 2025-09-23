@@ -1,12 +1,28 @@
 import { socket } from './socket.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('token');
     if (!token) {
         window.location.href = '/login.html';
         return;
     }
 
+    // Check if the user is an admin and redirect
+    try {
+        const response = await fetch('/api/auth/check-admin', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.isAdmin) {
+            window.location.href = '/admin.html';
+            return;
+        }
+    } catch (error) {
+        // Log the error but don't stop the application
+        console.error('Failed to check admin status:', error);
+    }
+
+    // All logic below this point is for regular users
     async function fetchData() {
         try {
             const [callsResponse, unitsResponse] = await Promise.all([
@@ -22,7 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error fetching data:', error);
-            if (error.status === 401) {
+            // Check for unauthorized access
+            if (error.response && error.response.status === 401) {
                 window.location.href = '/login.html';
             }
         }
