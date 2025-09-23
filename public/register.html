@@ -3,14 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MDT/CAD Register</title>
+    <title>AS:RP CAD Register</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
-    <div class="card" style="width: 400px; text-align: center;">
-        <h2 style="color: var(--blue-highlight);">MDT/CAD Register</h2>
-        <p style="margin-bottom: 20px;">Registration is handled through Discord.</p>
-        <a href="login.html" class="btn btn-primary">Go to Login</a>
+    <div class="card" style="width: 400px;">
+        <h2 style="text-align: center; color: var(--blue-highlight);">AS:RP CAD Register</h2>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+        <p style="text-align: center; margin-top: 20px;">Already have an account? <a href="login.html">Login here</a></p>
     </div>
+    <script src="js/register.js"></script>
 </body>
 </html>
